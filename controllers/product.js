@@ -5,11 +5,12 @@ exports.getProducts = async (req, res, next) => {
   try {
     const { page, size } = req.page;
     const skip = Math.abs((page - 1) * size);
+    const total = await Product.countDocuments();
     const products = await Product.find().skip(skip).limit(size);
     if (!products) {
       return next(createHttpError(404, "Products not found."));
     }
-    res.status(200).send(products);
+    res.status(200).send({ total, result: products });
   } catch (error) {
     next(createHttpError(400, error));
   }
@@ -33,13 +34,14 @@ exports.findProductsByCategoryId = async (req, res, next) => {
     const { page, size } = req.page;
     const skip = Math.abs((page - 1) * size);
     const { id } = req.params;
+    const total = await Product.countDocuments({ category: id });
     const products = await Product.find({ category: id })
       .skip(skip)
       .limit(size);
     if (!products) {
       return next(createHttpError(404, "Products not found."));
     }
-    res.status(200).send(products);
+    res.status(200).send({ total, result: products });
   } catch (error) {
     next(createHttpError(400, error));
   }
@@ -48,13 +50,20 @@ exports.findProductsByCategoryId = async (req, res, next) => {
 exports.searchProducts = async (req, res, next) => {
   try {
     const { query } = req.params;
-    const products = await Product.find({
+    const { page, size } = req.page;
+    const skip = Math.abs((page - 1) * size);
+    const total = await Product.countDocuments({
       name: { $regex: query, $options: "i" },
     });
+    const products = await Product.find({
+      name: { $regex: query, $options: "i" },
+    })
+      .skip(skip)
+      .limit(size);
     if (!products) {
       return next(createHttpError(404, "Products not found."));
     }
-    res.status(200).send(products);
+    res.status(200).send({ total, result: products });
   } catch (error) {
     next(createHttpError(400, error));
   }
