@@ -27,9 +27,11 @@ initDB(init);
 
 const CategoryRoutes = require("./routes/category");
 const SubCategoryRoutes = require("./routes/sub-category");
+const ProductRoutes = require("./routes/product");
 
 app.use("/category", CategoryRoutes);
 app.use("/sub-category", SubCategoryRoutes);
+app.use("/product", ProductRoutes);
 
 app.use((req, res, next) => {
   next(createHttpError(404, "Invalid Endpoint."));
