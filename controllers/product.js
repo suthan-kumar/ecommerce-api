@@ -28,6 +28,21 @@ exports.findProductById = async (req, res, next) => {
   }
 };
 
+exports.searchProducts = async (req, res, next) => {
+  try {
+    const { query } = req.params;
+    const products = await Product.find({
+      name: { $regex: query, $options: "i" },
+    });
+    if (!products) {
+      return next(createHttpError(404, "Products not found."));
+    }
+    res.status(200).send(products);
+  } catch (error) {
+    next(createHttpError(400, error));
+  }
+};
+
 exports.createProduct = async (req, res, next) => {
   try {
     const data = req.body;
