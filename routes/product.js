@@ -7,6 +7,8 @@ Router.route("/search/:query").get(ProductController.searchProducts);
 
 Router.route("/:id").get(ProductController.findProductById);
 
+Router.route("/category/:id").get(ProductController.findProductsByCategoryId);
+
 Router.route("/").post(ProductController.createProduct);
 
 Router.route("/:id").put(ProductController.updateProduct);

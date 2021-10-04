@@ -28,6 +28,23 @@ exports.findProductById = async (req, res, next) => {
   }
 };
 
+exports.findProductsByCategoryId = async (req, res, next) => {
+  try {
+    const { page, size } = req.page;
+    const skip = Math.abs((page - 1) * size);
+    const { id } = req.params;
+    const products = await Product.find({ category: id })
+      .skip(skip)
+      .limit(size);
+    if (!products) {
+      return next(createHttpError(404, "Products not found."));
+    }
+    res.status(200).send(products);
+  } catch (error) {
+    next(createHttpError(400, error));
+  }
+};
+
 exports.searchProducts = async (req, res, next) => {
   try {
     const { query } = req.params;
